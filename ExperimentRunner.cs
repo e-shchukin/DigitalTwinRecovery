@@ -20,7 +20,8 @@ public sealed class ExperimentRunner
         ScenarioKind.IntermediateOmission,
         ScenarioKind.TerminalOmission,
         ScenarioKind.LocalStateCorruption,
-        ScenarioKind.CheckpointReplay,
+        ScenarioKind.CheckpointRollback,
+        ScenarioKind.CheckpointSessionReplay,
         ScenarioKind.FullBlackout
     };
 
@@ -76,13 +77,8 @@ public sealed class ExperimentRunner
             request,
             scenarioReports,
             CalculateTerminalOmissionLatency(request),
-            new[]
-            {
-                "Сценарий повреждения локального состояния выходит за основную модель недоверенного узла и проверяет назначение ResultHash.",
-                "В сценарии полного подавления канала разработанный метод фиксирует COMM_LOSS, но не объявляет доказанную рассинхронизацию или DoS.",
-                "Модель не использует реальные задержки Thread.Sleep: время выявления рассчитывается дискретно, поэтому число прогонов не увеличивает продолжительность эксперимента линейно с T_probe.",
-                "Полученные результаты относятся к программной модели протокола; сетевые, процессорные и дисковые накладные расходы требуют отдельного стендового измерения."
-            });
+            new List<string>()
+            );
     }
 
     private static TrialOutcome RunTrial(
@@ -108,7 +104,8 @@ public sealed class ExperimentRunner
             ScenarioKind.IntermediateOmission => IntermediateOmission(source, twin, mode),
             ScenarioKind.TerminalOmission => TerminalOmission(source, twin, mode, random),
             ScenarioKind.LocalStateCorruption => LocalStateCorruption(source, twin, mode),
-            ScenarioKind.CheckpointReplay => CheckpointReplay(source, twin, mode, random),
+            ScenarioKind.CheckpointRollback => CheckpointRollback(source, twin, mode, random),
+            ScenarioKind.CheckpointSessionReplay => CheckpointSessionReplay(source, twin, mode, random),
             ScenarioKind.FullBlackout => FullBlackout(source, twin, mode, request.RetryCount),
             _ => throw new ArgumentOutOfRangeException(nameof(scenario), scenario, null)
         };
@@ -159,8 +156,8 @@ public sealed class ExperimentRunner
         var result = twin.ReceiveUpdate(second, mode);
         var detected = result != UpdateAcceptance.Accepted;
 
-        return mode == ProtectionMode.ProposedMethod && detected
-            ? Recover(source, twin, detected)
+        return (mode is ProtectionMode.HmacAndSequence or ProtectionMode.ProposedMethod) && detected
+            ? Recover(source, twin, mode, detected)
             : new TrialOutcome(detected, false, false, false);
     }
 
@@ -183,7 +180,7 @@ public sealed class ExperimentRunner
         var detected = twin.EvaluateStatus(status, nonce) == StatusEvaluation.Desynchronized;
 
         return detected
-            ? Recover(source, twin, detected)
+            ? Recover(source, twin, mode, detected)
             : new TrialOutcome(false, false, false, false);
     }
 
@@ -200,36 +197,73 @@ public sealed class ExperimentRunner
         var detected = result == UpdateAcceptance.ResultHashMismatch;
 
         return mode == ProtectionMode.ProposedMethod && detected
-            ? Recover(source, twin, detected)
+            ? Recover(source, twin, mode, detected)
             : new TrialOutcome(detected, false, false, false);
     }
 
-    private static TrialOutcome CheckpointReplay(
+    private static TrialOutcome CheckpointRollback(
         SourceSimulator source,
         TwinSimulator twin,
         ProtectionMode mode,
         Random random)
     {
-        if (mode != ProtectionMode.ProposedMethod)
+        var currentNonce = Nonce(random);
+        var first = source.CreateUpdate(new StateDelta(Pressure: source.State.Pressure + 1));
+        twin.ReceiveUpdate(first, mode);
+
+        var currentRequest = twin.CreateResyncRequest(currentNonce);
+        var oldCheckpoint = source.CreateCheckpoint(currentRequest);
+
+        var second = source.CreateUpdate(new StateDelta(FlowRate: source.State.FlowRate + 1));
+        twin.ReceiveUpdate(second, mode);
+
+        var rollbackResult = twin.ReceiveCheckpoint(oldCheckpoint, currentNonce, mode);
+        var detected = rollbackResult == CheckpointAcceptance.RollbackRejected;
+
+        if (!detected)
         {
-            return new TrialOutcome(false, false, false, false);
+            return new TrialOutcome(false, false, true, false);
         }
 
+        var currentCheckpoint = source.CreateCheckpoint(currentRequest);
+        var recovered = twin.ReceiveCheckpoint(currentCheckpoint, currentNonce, mode) == CheckpointAcceptance.Accepted &&
+                        twin.State == source.State &&
+                        twin.Sequence == source.Sequence;
+
+        return new TrialOutcome(detected, false, true, recovered);
+    }
+
+    private static TrialOutcome CheckpointSessionReplay(
+        SourceSimulator source,
+        TwinSimulator twin,
+        ProtectionMode mode,
+        Random random)
+    {
         source.CreateUpdate(new StateDelta(ValveOpen: !source.State.ValveOpen));
-        var oldNonce = Nonce(random);
-        var oldRequest = twin.CreateResyncRequest(oldNonce);
-        var oldCheckpoint = source.CreateCheckpoint(oldRequest);
+
+        var previousNonce = Nonce(random);
+        var previousRequest = twin.CreateResyncRequest(previousNonce);
+        var previousCheckpoint = source.CreateCheckpoint(previousRequest);
 
         var currentNonce = Nonce(random);
         var currentRequest = twin.CreateResyncRequest(currentNonce);
-        var replayResult = twin.ReceiveCheckpoint(oldCheckpoint, currentNonce);
+        var replayResult = twin.ReceiveCheckpoint(previousCheckpoint, currentNonce, mode);
         var detected = replayResult == CheckpointAcceptance.NonceMismatch;
 
-        var currentCheckpoint = source.CreateCheckpoint(currentRequest);
-        var recovered = twin.ReceiveCheckpoint(currentCheckpoint, currentNonce) == CheckpointAcceptance.Accepted &&
-                        twin.State == source.State;
+        if (!detected)
+        {
+            var acceptedCurrentState = replayResult == CheckpointAcceptance.Accepted &&
+                                       twin.State == source.State &&
+                                       twin.Sequence == source.Sequence;
+            return new TrialOutcome(false, false, true, acceptedCurrentState);
+        }
 
-        return new TrialOutcome(detected, false, true, recovered);
+        var currentCheckpoint = source.CreateCheckpoint(currentRequest);
+        var recovered = twin.ReceiveCheckpoint(currentCheckpoint, currentNonce, mode) == CheckpointAcceptance.Accepted &&
+                        twin.State == source.State &&
+                        twin.Sequence == source.Sequence;
+
+        return new TrialOutcome(true, false, true, recovered);
     }
 
     private static TrialOutcome FullBlackout(
@@ -262,12 +296,13 @@ public sealed class ExperimentRunner
     private static TrialOutcome Recover(
         SourceSimulator source,
         TwinSimulator twin,
+        ProtectionMode mode,
         bool detected)
     {
         var nonce = Convert.ToHexString(RandomNumberGenerator.GetBytes(16));
         var request = twin.CreateResyncRequest(nonce);
         var checkpoint = source.CreateCheckpoint(request);
-        var accepted = twin.ReceiveCheckpoint(checkpoint, nonce) == CheckpointAcceptance.Accepted;
+        var accepted = twin.ReceiveCheckpoint(checkpoint, nonce, mode) == CheckpointAcceptance.Accepted;
         var recovered = accepted && twin.State == source.State && twin.Sequence == source.Sequence;
         return new TrialOutcome(detected, false, true, recovered);
     }
@@ -351,7 +386,8 @@ public sealed class ExperimentRunner
             ScenarioKind.IntermediateOmission => "Удаление промежуточного UPDATE",
             ScenarioKind.TerminalOmission => "Удаление последнего UPDATE",
             ScenarioKind.LocalStateCorruption => "Повреждение локального состояния ЦД",
-            ScenarioKind.CheckpointReplay => "Повтор старого CHECKPOINT",
+            ScenarioKind.CheckpointRollback => "Откат на CHECKPOINT с меньшим Seq",
+            ScenarioKind.CheckpointSessionReplay => "Повтор CHECKPOINT из предыдущего сеанса",
             ScenarioKind.FullBlackout => "Полное подавление канала",
             _ => scenario.ToString()
         };
@@ -366,7 +402,8 @@ public sealed class ExperimentRunner
             ScenarioKind.IntermediateOmission => "Проверка обнаружения разрыва Seq.",
             ScenarioKind.TerminalOmission => "Проверка SYNC_PROBE при отсутствии следующего UPDATE.",
             ScenarioKind.LocalStateCorruption => "Проверка постусловия перехода по ResultHash.",
-            ScenarioKind.CheckpointReplay => "Проверка связи CHECKPOINT с текущим nonce.",
+            ScenarioKind.CheckpointRollback => "Проверка запрета понижения версии снимка.",
+            ScenarioKind.CheckpointSessionReplay => "Проверка связи CHECKPOINT с текущим запросом по nonce.",
             ScenarioKind.FullBlackout => "Проверка перехода в COMM_LOSS без ложной атрибуции DoS.",
             _ => string.Empty
         };
@@ -401,54 +438,5 @@ public sealed class ExperimentRunner
                 nameof(request.RetryCount),
                 "Число повторных попыток должно находиться в диапазоне от 1 до 100.");
         }
-    }
-}
-
-public static class ExperimentCsv
-{
-    public static string Build(ExperimentReport report)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine("Сценарий;Вариант защиты;Прогонов;Обнаружено;Доля обнаружения, %;COMM_LOSS;Доля COMM_LOSS, %;Попыток восстановления;Успешных восстановлений;Успех восстановления, %");
-
-        foreach (var scenario in report.Scenarios)
-        {
-            foreach (var mode in scenario.Modes)
-            {
-                builder.Append(Escape(scenario.Name)).Append(';')
-                    .Append(mode.Mode).Append(';')
-                    .Append(mode.Trials).Append(';')
-                    .Append(mode.Detected).Append(';')
-                    .Append(Number(mode.DetectionRatePercent)).Append(';')
-                    .Append(mode.CommunicationLoss).Append(';')
-                    .Append(Number(mode.CommunicationLossRatePercent)).Append(';')
-                    .Append(mode.RecoveryAttempts).Append(';')
-                    .Append(mode.SuccessfulRecoveries).Append(';')
-                    .Append(Number(mode.RecoverySuccessRatePercent))
-                    .AppendLine();
-            }
-        }
-
-        builder.AppendLine();
-        builder.AppendLine("Метрика задержки обнаружения удаления последнего UPDATE;Значение, мс");
-        builder.AppendLine($"Количество прогонов;{report.TerminalOmissionDetectionLatency.Samples}");
-        builder.AppendLine($"Среднее;{Number(report.TerminalOmissionDetectionLatency.MeanMs)}");
-        builder.AppendLine($"Медиана;{Number(report.TerminalOmissionDetectionLatency.MedianMs)}");
-        builder.AppendLine($"95-й процентиль;{Number(report.TerminalOmissionDetectionLatency.Percentile95Ms)}");
-        builder.AppendLine($"Максимум;{Number(report.TerminalOmissionDetectionLatency.MaximumMs)}");
-
-        return builder.ToString();
-    }
-
-    private static string Number(double value)
-    {
-        return value.ToString("0.####", CultureInfo.InvariantCulture);
-    }
-
-    private static string Escape(string value)
-    {
-        return value.Contains(';') || value.Contains('"')
-            ? $"\"{value.Replace("\"", "\"\"")}\""
-            : value;
     }
 }

@@ -1,9 +1,9 @@
 const form = document.querySelector("#experiment-form");
 const runButton = document.querySelector("#run-button");
-const csvButton = document.querySelector("#csv-button");
 const statusElement = document.querySelector("#status");
 const resultsElement = document.querySelector("#results");
 const resultRows = document.querySelector("#result-rows");
+const reportNotes = document.querySelector("#report-notes");
 const rawJson = document.querySelector("#raw-json");
 
 const modeNames = {
@@ -27,7 +27,6 @@ function requestFromForm() {
 
 function setBusy(value) {
     runButton.disabled = value;
-    csvButton.disabled = value;
 }
 
 function setStatus(text, isError = false) {
@@ -39,9 +38,16 @@ function formatPercent(value) {
     return `${Number(value).toFixed(2)}%`;
 }
 
-function metricCell(value) {
+function metricCell(value, applicable = true) {
     const td = document.createElement("td");
     td.className = "metric";
+
+    if (!applicable) {
+        td.classList.add("not-applicable");
+        td.textContent = "–";
+        td.title = "В этом сценарии восстановление не выполнялось";
+        return td;
+    }
 
     const progress = document.createElement("progress");
     progress.max = 100;
@@ -65,8 +71,11 @@ function renderReport(report) {
                 const scenarioCell = document.createElement("td");
                 scenarioCell.className = "scenario";
                 scenarioCell.rowSpan = scenario.modes.length;
-                scenarioCell.textContent = scenario.name;
-                scenarioCell.title = scenario.purpose;
+                const scenarioName = document.createElement("strong");
+                scenarioName.textContent = scenario.name;
+                const scenarioPurpose = document.createElement("small");
+                scenarioPurpose.textContent = scenario.purpose;
+                scenarioCell.append(scenarioName, scenarioPurpose);
                 row.append(scenarioCell);
             }
 
@@ -75,7 +84,9 @@ function renderReport(report) {
             row.append(modeCell);
             row.append(metricCell(mode.detectionRatePercent));
             row.append(metricCell(mode.communicationLossRatePercent));
-            row.append(metricCell(mode.recoverySuccessRatePercent));
+            row.append(metricCell(
+                mode.recoverySuccessRatePercent,
+                mode.recoveryAttempts > 0));
             resultRows.append(row);
         });
     }
@@ -87,6 +98,12 @@ function renderReport(report) {
     document.querySelector("#latency-max").textContent = `${latency.maximumMs.toFixed(2)} мс`;
 
     rawJson.textContent = JSON.stringify(report, null, 2);
+    reportNotes.replaceChildren();
+    for (const note of report.notes) {
+        const item = document.createElement("li");
+        item.textContent = note;
+        reportNotes.append(item);
+    }
     resultsElement.hidden = false;
 }
 
@@ -117,35 +134,6 @@ form.addEventListener("submit", async event => {
 
         renderReport(await response.json());
         setStatus("Расчет завершен.");
-    } catch (error) {
-        setStatus(error.message, true);
-    } finally {
-        setBusy(false);
-    }
-});
-
-csvButton.addEventListener("click", async () => {
-    setBusy(true);
-    setStatus("Формируется CSV...");
-
-    try {
-        const response = await fetch("/api/experiment/run.csv", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestFromForm())
-        });
-
-        if (!response.ok) {
-            throw new Error(await readError(response));
-        }
-
-        const url = URL.createObjectURL(await response.blob());
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "digital-twin-sync-experiment.csv";
-        link.click();
-        URL.revokeObjectURL(url);
-        setStatus("CSV сформирован.");
     } catch (error) {
         setStatus(error.message, true);
     } finally {

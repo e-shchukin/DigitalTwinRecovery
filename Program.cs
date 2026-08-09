@@ -15,9 +15,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Эксперимент защищенной синхронизации ЦД",
+        Title = "Эксперимент ЦД",
         Version = "v1",
-        Description = "Сравнение HMAC, HMAC + Seq и разработанного метода по заданным сценариям воздействия."
+        Description = ""
     });
 });
 builder.Services.AddSingleton<ExperimentRunner>();
@@ -30,7 +30,7 @@ app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Эксперимент v1");
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Эксперимент ЦД");
     options.RoutePrefix = "swagger";
     options.DocumentTitle = "API";
 });

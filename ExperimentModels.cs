@@ -24,7 +24,8 @@ public enum ScenarioKind
     IntermediateOmission,
     TerminalOmission,
     LocalStateCorruption,
-    CheckpointReplay,
+    CheckpointRollback,
+    CheckpointSessionReplay,
     FullBlackout
 }
 

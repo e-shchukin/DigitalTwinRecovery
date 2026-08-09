@@ -179,11 +179,46 @@ th {
 
 td.scenario {
     width: 27%;
-    font-weight: 600;
+}
+
+td.scenario strong,
+td.scenario small {
+    display: block;
+}
+
+td.scenario small {
+    margin-top: 4px;
+    color: #666;
+    font-weight: 400;
+    line-height: 1.35;
 }
 
 .metric {
     min-width: 145px;
+}
+
+.metric.not-applicable {
+    color: #666;
+    text-align: center;
+    font-size: 17px;
+}
+
+.table-note {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.report-notes {
+    margin: 12px 0 0;
+    padding-left: 20px;
+    color: #444;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.report-notes li + li {
+    margin-top: 4px;
 }
 
 progress {

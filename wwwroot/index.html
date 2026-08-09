@@ -9,13 +9,8 @@
 <body>
 <main>
     <header>
-        <div>
-            <h1>Эксперимент защищенной синхронизации ЦД</h1>
-            <p>Сравнение HMAC, HMAC + Seq и разработанного метода.</p>
-        </div>
         <nav>
             <a href="/swagger">Swagger</a>
-            <a href="/health">Проверка API</a>
         </nav>
     </header>
 
@@ -24,7 +19,7 @@
         <form id="experiment-form">
             <label>
                 Прогонов на сценарий
-                <input name="runsPerScenario" type="number" min="1" max="1000000" value="10000" required>
+                <input name="runsPerScenario" type="number" min="1" max="100000" value="10000" required>
             </label>
             <label>
                 Начальное значение генератора
@@ -48,7 +43,6 @@
             </label>
             <div class="actions">
                 <button id="run-button" type="submit">Запустить</button>
-                <button id="csv-button" type="button" class="secondary">Скачать CSV</button>
                 <span id="status" aria-live="polite"></span>
             </div>
         </form>
@@ -78,6 +72,7 @@
                 <tbody id="result-rows"></tbody>
             </table>
         </div>
+        <ul id="report-notes" class="report-notes"></ul>
 
         <details>
             <summary>Показать JSON</summary>

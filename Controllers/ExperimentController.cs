@@ -37,31 +37,7 @@ public sealed class ExperimentController : ControllerBase
     {
         return RunExperiment(request, cancellationToken);
     }
-
-    [HttpPost("run.csv")]
-    [Produces("text/csv")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RunCsv(
-        [FromBody] ExperimentRequest request,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var report = await Task.Run(() => _runner.Run(request), cancellationToken);
-            var csv = ExperimentCsv.Build(report);
-
-            return File(
-                Encoding.UTF8.GetBytes(csv),
-                "text/csv; charset=utf-8",
-                "digital-twin-sync-experiment.csv");
-        }
-        catch (ArgumentOutOfRangeException exception)
-        {
-            return BadRequest(new { error = exception.Message });
-        }
-    }
-
+    
     private async Task<ActionResult<ExperimentReport>> RunExperiment(
         ExperimentRequest request,
         CancellationToken cancellationToken)

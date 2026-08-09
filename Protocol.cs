@@ -444,7 +444,8 @@ public sealed class TwinSimulator
 
     public CheckpointAcceptance ReceiveCheckpoint(
         CheckpointMessage checkpoint,
-        string expectedNonce)
+        string expectedNonce,
+        ProtectionMode mode)
     {
         var payload = ProtocolCanonicalizer.Checkpoint(
             checkpoint.Type,
@@ -461,18 +462,21 @@ public sealed class TwinSimulator
             return CheckpointAcceptance.AuthenticationFailed;
         }
 
-        if (checkpoint.Nonce != expectedNonce)
+        if (mode == ProtectionMode.ProposedMethod &&
+            checkpoint.Nonce != expectedNonce)
         {
             return CheckpointAcceptance.NonceMismatch;
         }
 
-        if (checkpoint.Epoch < Epoch ||
-            checkpoint.Epoch == Epoch && checkpoint.Sequence < Sequence)
+        if ((mode is ProtectionMode.HmacAndSequence or ProtectionMode.ProposedMethod) &&
+            (checkpoint.Epoch < Epoch ||
+             checkpoint.Epoch == Epoch && checkpoint.Sequence < Sequence))
         {
             return CheckpointAcceptance.RollbackRejected;
         }
 
-        if (!string.Equals(
+        if (mode == ProtectionMode.ProposedMethod &&
+            !string.Equals(
                 ProtocolCrypto.HashState(checkpoint.State),
                 checkpoint.ResultHash,
                 StringComparison.Ordinal))

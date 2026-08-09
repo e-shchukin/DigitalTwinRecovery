@@ -26,17 +26,3 @@ Content-Type: application/json
   "maxRoundTripMs": 100,
   "retryCount": 3
 }
-
-###
-
-POST {{host}}/api/experiment/run.csv
-Content-Type: application/json
-
-{
-  "runsPerScenario": 10000,
-  "seed": 20260809,
-  "probeIntervalMs": 5000,
-  "minRoundTripMs": 20,
-  "maxRoundTripMs": 100,
-  "retryCount": 3
-}
