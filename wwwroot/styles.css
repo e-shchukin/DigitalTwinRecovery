@@ -1,0 +1,237 @@
+:root {
+    color-scheme: light;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #1b1b1b;
+    background: #f3f3f3;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+main {
+    width: min(1100px, calc(100% - 32px));
+    margin: 28px auto 60px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 6px;
+    font-size: 25px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+header p {
+    color: #555;
+    margin-bottom: 0;
+}
+
+nav {
+    display: flex;
+    gap: 14px;
+    white-space: nowrap;
+}
+
+a {
+    color: #174ea6;
+}
+
+section {
+    background: #fff;
+    border: 1px solid #d6d6d6;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 14px;
+}
+
+label {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    color: #444;
+}
+
+input,
+button {
+    font: inherit;
+}
+
+input {
+    width: 100%;
+    border: 1px solid #aaa;
+    padding: 8px 9px;
+    color: #111;
+    background: #fff;
+}
+
+.actions {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+button {
+    border: 1px solid #222;
+    background: #222;
+    color: #fff;
+    padding: 9px 14px;
+    cursor: pointer;
+}
+
+button.secondary {
+    color: #222;
+    background: #fff;
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+#status {
+    color: #555;
+    font-size: 13px;
+}
+
+#status.error {
+    color: #9f1c1c;
+}
+
+.latency {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid #d6d6d6;
+    margin-bottom: 18px;
+}
+
+.latency div {
+    padding: 12px;
+    border-right: 1px solid #d6d6d6;
+}
+
+.latency div:last-child {
+    border-right: 0;
+}
+
+.latency span,
+.latency strong {
+    display: block;
+}
+
+.latency span {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.latency strong {
+    font-size: 18px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th,
+td {
+    border: 1px solid #cfcfcf;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background: #f1f1f1;
+}
+
+td.scenario {
+    width: 27%;
+    font-weight: 600;
+}
+
+.metric {
+    min-width: 145px;
+}
+
+progress {
+    width: 92px;
+    height: 10px;
+    margin-right: 7px;
+    vertical-align: middle;
+}
+
+details {
+    margin-top: 16px;
+}
+
+summary {
+    cursor: pointer;
+}
+
+pre {
+    max-height: 420px;
+    overflow: auto;
+    border: 1px solid #d6d6d6;
+    background: #fafafa;
+    padding: 12px;
+    font: 12px/1.45 Consolas, "Courier New", monospace;
+}
+
+@media (max-width: 760px) {
+    header {
+        display: block;
+    }
+
+    nav {
+        margin-top: 12px;
+    }
+
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    .latency {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .latency div:nth-child(2) {
+        border-right: 0;
+    }
+
+    .latency div:nth-child(-n+2) {
+        border-bottom: 1px solid #d6d6d6;
+    }
+}

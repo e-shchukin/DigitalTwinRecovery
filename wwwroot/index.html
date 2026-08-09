@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Эксперимент синхронизации ЦД</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main>
+    <header>
+        <div>
+            <h1>Эксперимент защищенной синхронизации ЦД</h1>
+            <p>Сравнение HMAC, HMAC + Seq и разработанного метода.</p>
+        </div>
+        <nav>
+            <a href="/swagger">Swagger</a>
+            <a href="/health">Проверка API</a>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Параметры</h2>
+        <form id="experiment-form">
+            <label>
+                Прогонов на сценарий
+                <input name="runsPerScenario" type="number" min="1" max="1000000" value="10000" required>
+            </label>
+            <label>
+                Начальное значение генератора
+                <input name="seed" type="number" value="20260809" required>
+            </label>
+            <label>
+                Период проверки, мс
+                <input name="probeIntervalMs" type="number" min="1" value="5000" required>
+            </label>
+            <label>
+                Минимальное время обмена, мс
+                <input name="minRoundTripMs" type="number" min="0" value="20" required>
+            </label>
+            <label>
+                Максимальное время обмена, мс
+                <input name="maxRoundTripMs" type="number" min="0" value="100" required>
+            </label>
+            <label>
+                Число повторных попыток
+                <input name="retryCount" type="number" min="1" value="3" required>
+            </label>
+            <div class="actions">
+                <button id="run-button" type="submit">Запустить</button>
+                <button id="csv-button" type="button" class="secondary">Скачать CSV</button>
+                <span id="status" aria-live="polite"></span>
+            </div>
+        </form>
+    </section>
+
+    <section id="results" hidden>
+        <h2>Результаты</h2>
+
+        <div class="latency">
+            <div><span>Средняя задержка</span><strong id="latency-mean">–</strong></div>
+            <div><span>Медиана</span><strong id="latency-median">–</strong></div>
+            <div><span>95-й процентиль</span><strong id="latency-p95">–</strong></div>
+            <div><span>Максимум</span><strong id="latency-max">–</strong></div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Сценарий</th>
+                    <th>Вариант защиты</th>
+                    <th>Обнаружение</th>
+                    <th>Потеря связи</th>
+                    <th>Восстановление</th>
+                </tr>
+                </thead>
+                <tbody id="result-rows"></tbody>
+            </table>
+        </div>
+
+        <details>
+            <summary>Показать JSON</summary>
+            <pre id="raw-json"></pre>
+        </details>
+    </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
