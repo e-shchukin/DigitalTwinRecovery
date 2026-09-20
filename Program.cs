@@ -15,9 +15,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Эксперимент ЦД",
-        Version = "v1",
-        Description = ""
+        Title = "Программа моделирования и оценки защищённой синхронизации состояния цифрового двойника",
+        Version = "1.0.0",
+        Description = "API экспериментального программного стенда"
     });
 });
 builder.Services.AddSingleton<ExperimentRunner>();
@@ -30,7 +30,9 @@ app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Эксперимент ЦД");
+    options.SwaggerEndpoint(
+        "/swagger/v1/swagger.json",
+        "Программа моделирования и оценки защищённой синхронизации состояния цифрового двойника");
     options.RoutePrefix = "swagger";
     options.DocumentTitle = "API";
 });
