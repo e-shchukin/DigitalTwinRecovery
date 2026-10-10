@@ -1,89 +1,9 @@
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Защищённая синхронизация состояния цифрового двойника</title>
-    <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-<main>
-    <header>
-        <div>
-            <h1>Защищённая синхронизация состояния цифрового двойника</h1>
-            <p>Экспериментальный программный стенд</p>
-        </div>
-        <nav>
-            <a href="/swagger">Swagger</a>
-        </nav>
-    </header>
-
-    <section>
-        <h2>Параметры</h2>
-        <form id="experiment-form">
-            <label>
-                Прогонов на сценарий
-                <input name="runsPerScenario" type="number" min="1" max="100000" value="10000" required>
-            </label>
-            <label>
-                Начальное значение генератора
-                <input name="seed" type="number" value="20260809" required>
-            </label>
-            <label>
-                Период проверки, мс
-                <input name="probeIntervalMs" type="number" min="1" value="5000" required>
-            </label>
-            <label>
-                Минимальное время обмена, мс
-                <input name="minRoundTripMs" type="number" min="0" value="20" required>
-            </label>
-            <label>
-                Максимальное время обмена, мс
-                <input name="maxRoundTripMs" type="number" min="0" value="100" required>
-            </label>
-            <label>
-                Число повторных попыток
-                <input name="retryCount" type="number" min="1" value="3" required>
-            </label>
-            <div class="actions">
-                <button id="run-button" type="submit">Запустить</button>
-                <span id="status" aria-live="polite"></span>
-            </div>
-        </form>
-    </section>
-
-    <section id="results" hidden>
-        <h2>Результаты</h2>
-
-        <div class="latency">
-            <div><span>Средняя задержка</span><strong id="latency-mean">–</strong></div>
-            <div><span>Медиана</span><strong id="latency-median">–</strong></div>
-            <div><span>95-й процентиль</span><strong id="latency-p95">–</strong></div>
-            <div><span>Максимум</span><strong id="latency-max">–</strong></div>
-        </div>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                <tr>
-                    <th>Сценарий</th>
-                    <th>Вариант защиты</th>
-                    <th>Обнаружение</th>
-                    <th>Потеря связи</th>
-                    <th>Восстановление</th>
-                </tr>
-                </thead>
-                <tbody id="result-rows"></tbody>
-            </table>
-        </div>
-        <ul id="report-notes" class="report-notes"></ul>
-
-        <details>
-            <summary>Показать JSON</summary>
-            <pre id="raw-json"></pre>
-        </details>
-    </section>
-</main>
-<script src="/app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DigitalTwinRecovery</title>
+<style>body{font:16px system-ui;max-width:1100px;margin:32px auto;padding:0 20px;color:#111}h1{font-size:26px}label{display:inline-block;margin:8px}button{padding:8px 14px}table{border-collapse:collapse;width:100%;margin:18px 0;font-size:13px}td,th{border:1px solid #111;padding:7px;text-align:left}pre{white-space:pre-wrap}input{width:100px;padding:5px}</style>
+<h1>DigitalTwinRecovery</h1><p>Проверка снимка и восстановление состояния. Временные результаты относятся к локальным операциям; сеть в измерение не входит.</p><label>Прогоны: <input id="runs" type="number" value="1000" min="1" max="10000"></label><label>Seed: <input id="seed" type="number" value="20260809"></label><button id="run">Запустить</button><button id="save" disabled>Скачать JSON</button><p id="status"></p><div id="tables"></div><pre id="limits"></pre>
+<script>
+let result;const pick=(x,a)=>x[a]??x[a[0].toLowerCase()+a.slice(1)];
+function table(rows){if(!rows.length)return;const keys=Object.keys(rows[0]);const t=document.createElement('table');const head=document.createElement('tr');for(const k of keys){const th=document.createElement('th');th.textContent=k;head.append(th)}t.append(head);for(const r of rows){const tr=document.createElement('tr');for(const k of keys){const td=document.createElement('td');td.textContent=typeof r[k]==='object'?JSON.stringify(r[k]):r[k];tr.append(td)}t.append(tr)}document.querySelector('#tables').append(t)}
+document.querySelector('#run').onclick=async()=>{const button=document.querySelector('#run');button.disabled=true;document.querySelector('#status').textContent='Выполняется…';try{const response=await fetch('/api/experiment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runs:Number(document.querySelector('#runs').value),seed:Number(document.querySelector('#seed').value)})});const data=await response.json();if(!response.ok)throw new Error(data.error||'Ошибка');result=data;const r=pick(data,'Report');document.querySelector('#tables').replaceChildren();table(pick(r,'Functional'));table(pick(r,'Latency')||pick(r,'Benchmark'));document.querySelector('#limits').textContent=pick(r,'Limitations').join('\n');document.querySelector('#status').textContent='Завершено. Исходные данные доступны в JSON.';document.querySelector('#save').disabled=false}catch(e){document.querySelector('#status').textContent=e.message}finally{button.disabled=false}};
+document.querySelector('#save').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='DigitalTwinRecovery-report.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+</script></html>

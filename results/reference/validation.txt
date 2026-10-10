@@ -1,0 +1,7 @@
+Self-tests: PASS, 8128 assertions.
+Direct Roslyn compiler: .NET SDK 8.0.414, nullable enabled, warnings as errors.
+Runtime: .NET 8.0.20.
+HTTP smoke: PASS (homepage, health, defaults, runs=1, runs=0 rejected with 400).
+Standard SDK/MSBuild was not executed successfully in the managed validation environment.
+GitHub Actions workflow is provided but has not run before publication.
+Recovery process-crash tests, when present, ran on the local Linux filesystem; power failure not tested.

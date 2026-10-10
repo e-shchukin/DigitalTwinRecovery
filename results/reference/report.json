@@ -1,0 +1,571 @@
+{
+  "report": {
+    "project": "DigitalTwinRecovery",
+    "upstreamCommit": "763aae5ee00912d2c4c484dfc3d931b2cfbfcb3c",
+    "parameters": {
+      "runs": 10000,
+      "seed": 20260809,
+      "benchmarkRepeats": 30
+    },
+    "functional": [
+      {
+        "scenario": "ValidSnapshot",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ValidSnapshot",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ValidSnapshot",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "SameVersionRepair",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "SameVersionRepair",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "SameVersionRepair",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "SnapshotTampering",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "SnapshotTampering",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "SnapshotTampering",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "WrongSession",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 10000
+      },
+      {
+        "scenario": "WrongSession",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 10000
+      },
+      {
+        "scenario": "WrongSession",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "Rollback",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 10000,
+        "wrongSessionAccepted": 10000
+      },
+      {
+        "scenario": "Rollback",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "Rollback",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "OlderThanKnownVersion",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 10000,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "OlderThanKnownVersion",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 10000,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "OlderThanKnownVersion",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "NewEpoch",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "NewEpoch",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "NewEpoch",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "OldEpoch",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 10000,
+        "wrongSessionAccepted": 10000
+      },
+      {
+        "scenario": "OldEpoch",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "OldEpoch",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ClosedRequest",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ClosedRequest",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ClosedRequest",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ExpiredRequest",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ExpiredRequest",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "ExpiredRequest",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "IncorrectSourceHash",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "IncorrectSourceHash",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "IncorrectSourceHash",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 0,
+        "rejected": 10000,
+        "statePreservedOnRejection": 10000,
+        "correctAfterAccepted": 0,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "UpdateDuringRecovery",
+        "mode": "HmacOnly",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "UpdateDuringRecovery",
+        "mode": "HmacVersion",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      },
+      {
+        "scenario": "UpdateDuringRecovery",
+        "mode": "Full",
+        "runs": 10000,
+        "accepted": 10000,
+        "rejected": 0,
+        "statePreservedOnRejection": 0,
+        "correctAfterAccepted": 10000,
+        "belowKnownFloor": 0,
+        "wrongSessionAccepted": 0
+      }
+    ],
+    "benchmark": [
+      {
+        "store": "Memory",
+        "stateBytes": 17,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 0.004669999999999999,
+          "medianMs": 0.0043,
+          "p95Ms": 0.0061,
+          "maxMs": 0.0071
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 0.028376666666666665,
+          "medianMs": 0.0045,
+          "p95Ms": 0.0066,
+          "maxMs": 0.7088
+        }
+      },
+      {
+        "store": "File",
+        "stateBytes": 17,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 0.005913333333333331,
+          "medianMs": 0.005,
+          "p95Ms": 0.0084,
+          "maxMs": 0.0241
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 0.24402000000000001,
+          "medianMs": 0.15960000000000002,
+          "p95Ms": 0.3982,
+          "maxMs": 1.7389
+        }
+      },
+      {
+        "store": "Memory",
+        "stateBytes": 4113,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 0.01787666666666666,
+          "medianMs": 0.017750000000000002,
+          "p95Ms": 0.019,
+          "maxMs": 0.0196
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 0.05170666666666667,
+          "medianMs": 0.048850000000000005,
+          "p95Ms": 0.0722,
+          "maxMs": 0.0815
+        }
+      },
+      {
+        "store": "File",
+        "stateBytes": 4113,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 0.030013333333333336,
+          "medianMs": 0.0217,
+          "p95Ms": 0.046,
+          "maxMs": 0.2195
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 0.5070066666666667,
+          "medianMs": 0.37555,
+          "p95Ms": 0.9981,
+          "maxMs": 1.8008
+        }
+      },
+      {
+        "store": "Memory",
+        "stateBytes": 65553,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 0.5453066666666666,
+          "medianMs": 0.3882,
+          "p95Ms": 1.0947,
+          "maxMs": 1.7163
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 0.9411766666666668,
+          "medianMs": 0.7515499999999999,
+          "p95Ms": 2.2457,
+          "maxMs": 3.3708
+        }
+      },
+      {
+        "store": "File",
+        "stateBytes": 65553,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 0.4030533333333333,
+          "medianMs": 0.24925,
+          "p95Ms": 1.0876,
+          "maxMs": 1.4369
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 4.921023333333333,
+          "medianMs": 4.416399999999999,
+          "p95Ms": 7.3696,
+          "maxMs": 10.8847
+        }
+      },
+      {
+        "store": "Memory",
+        "stateBytes": 1048593,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 7.139976666666667,
+          "medianMs": 6.06285,
+          "p95Ms": 12.8539,
+          "maxMs": 19.9054
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 18.63936,
+          "medianMs": 14.7567,
+          "p95Ms": 42.8085,
+          "maxMs": 47.638
+        }
+      },
+      {
+        "store": "File",
+        "stateBytes": 1048593,
+        "snapshotCreation": {
+          "samples": 30,
+          "meanMs": 6.984466666666666,
+          "medianMs": 6.806,
+          "p95Ms": 12.273,
+          "maxMs": 12.7676
+        },
+        "verificationAndCommit": {
+          "samples": 30,
+          "meanMs": 67.45985666666667,
+          "medianMs": 66.5454,
+          "p95Ms": 87.1931,
+          "maxMs": 90.2823
+        }
+      }
+    ],
+    "limitations": [
+      "Recovery starts from an established discrepancy; detection is not part of this experiment.",
+      "Snapshot data is compared with the captured source version, not with a continuously changing source at arbitrary later time.",
+      "Benchmark measures local snapshot creation, verification and commit on this machine; network RTT and transfer are excluded.",
+      "File store is single-writer and tested for process crashes on Linux; power loss, hostile storage rollback and multiple writers are not covered.",
+      "Known version floor is trusted input from an authenticated freshness check; the source's persistent epoch management is outside scope."
+    ]
+  },
+  "environment": {
+    "generatedAtUtc": "2026-10-10T15:27:15.8579941+00:00",
+    "runtime": ".NET 8.0.20",
+    "os": "Ubuntu 24.04.3 LTS",
+    "architecture": "X64",
+    "processors": 8,
+    "assemblySha256": "319C78AD17480EDBF61D343B41286DEC24565A851875C9D4C500756C676EC2E0",
+    "upstreamCommit": "763aae5ee00912d2c4c484dfc3d931b2cfbfcb3c"
+  }
+}
