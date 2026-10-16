@@ -68,7 +68,6 @@ public static class SelfTests
                 Check.That(failureAgent.Update(failureSource.Update(new Delta(FlowRate: 777))) == "RecoveryInProgress", "uncertain install fences deltas");
                 var retry = failureAgent.Begin(); Check.That(failureAgent.Receive(failureSource.Checkpoint(retry)) == "Accepted", "new request recovers after I/O failure");
             }
-            // A deliberate non-atomic counterexample: new version with old state.
             var unsafeStatePath = Path.Combine(root, "unsafe-state.json"); var unsafeVersionPath = Path.Combine(root, "unsafe-version.json");
             File.WriteAllText(unsafeStatePath, JsonSerializer.Serialize(state)); File.WriteAllText(unsafeVersionPath, "1");
             var unsafeState = JsonSerializer.Deserialize<TwinData>(File.ReadAllText(unsafeStatePath))!;

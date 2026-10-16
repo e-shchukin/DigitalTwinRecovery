@@ -35,7 +35,6 @@ public sealed record LocalRecord(TwinData State, VersionStamp Version, string Ha
 
 public sealed record Packet(string Type, string TwinId, VersionStamp Version, string Nonce, byte[] Payload, string Hash, string Tag);
 
-// Length-prefixed binary fields; message type is checked as well as authenticated.
 public static class Wire
 {
     public const int MaxPayloadBytes = 8 * 1024 * 1024;

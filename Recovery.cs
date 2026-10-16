@@ -15,8 +15,6 @@ public sealed class MemoryRecordStore(LocalRecord initial) : IRecordStore
 public enum CommitPoint { BeforeWrite, DuringWrite, AfterFlushBeforeRename, AfterRenameBeforePublish }
 public sealed record DiskEnvelope(string Body, string Sha256);
 
-// Single writer. Temporary file and destination are in the same directory.
-// Tested contract: process crash on a local Linux filesystem, not power loss.
 public sealed class FileRecordStore : IRecordStore
 {
     private readonly object _gate = new(); private readonly string _path; private LocalRecord _record;
@@ -60,8 +58,6 @@ public sealed class FileRecordStore : IRecordStore
             }
             catch
             {
-                // An I/O exception after rename may mean the durable value changed.
-                // Reload the complete record before exposing further operations.
                 if (File.Exists(_path)) Interlocked.Exchange(ref _record, Load(_path)); throw;
             }
             finally { if (File.Exists(temporary)) File.Delete(temporary); }
@@ -87,8 +83,6 @@ public sealed class RecoveryAgent
         _id = id; _key = key.ToArray(); _store = store; Mode = mode; _clock = clock; _nonces = nonces ?? new CryptoNonce(); _timeout = timeout;
         if (Record.Version.CompareTo(Record.MinimumVersion) < 0) State = RecoveryState.NeedsRecovery;
     }
-    // knownVersion is trusted input from an already authenticated freshness check.
-    // The network peer cannot set this floor through an unauthenticated message.
     public void ObserveKnownVersion(VersionStamp version)
     {
         lock (_gate)
@@ -130,7 +124,6 @@ public sealed class RecoveryAgent
             TwinData state; try { state = Wire.ReadState(snapshot.Payload); } catch (IOException) { return "MalformedState"; }
             var hash = Wire.Hash(state); if (Mode == RecoveryProtection.Full && hash != snapshot.Hash) return "ResultHash";
             var next = new LocalRecord(state, snapshot.Version, hash, VersionStamp.Max(old.MinimumVersion, snapshot.Version));
-            // Consume the context before committing. An uncertain failed install requires a new request.
             _pending = null;
             try { _store.Commit(next); State = RecoveryState.Ready; return "Accepted"; }
             catch (IOException) { State = RecoveryState.InstallationFailed; return "InstallationFailed"; }
@@ -194,7 +187,7 @@ public static class RecoveryExperiment
                     if (scenario == "WrongSession") { var previous = snapshot; request = agent.Begin(); snapshot = previous; }
                     if (scenario == "ClosedRequest") agent.Receive(snapshot);
                     if (scenario == "ExpiredRequest") clock.MoveTo(1000);
-                    if (scenario == "IncorrectSourceHash") snapshot = Wire.Sign(snapshot with { Hash = new string('0', 64) }, key); // diagnostic: faulty trusted producer, not a forged MAC
+                    if (scenario == "IncorrectSourceHash") snapshot = Wire.Sign(snapshot with { Hash = new string('0', 64) }, key);
                     if (scenario == "UpdateDuringRecovery")
                     { var update = source.Update(new Delta(Temperature: state.Temperature + 1)); Check.That(agent.Update(update) == "RecoveryInProgress", "deltas fenced while awaiting snapshot"); }
                 }

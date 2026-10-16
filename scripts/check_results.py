@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Verify exported totals and recompute timing summaries with Python stdlib."""
 import csv, gzip, json, math, sys
 from collections import defaultdict
 from pathlib import Path
